@@ -212,12 +212,22 @@ void FlightModeManager::start_flight_task()
 		case 0:
 			error = switchTask(FlightTaskIndex::ManualPosition);
 			break;
-
+		case 1:
+			error = switchTask(FlightTaskIndex::MyTask);
+			break;
+		case 2:
+			error = switchTask(FlightTaskIndex::ContinuousYaw);
+			break;
 		case 3:
 			error = switchTask(FlightTaskIndex::ManualPositionSmoothVel);
 			break;
-
 		case 4:
+		case 5:
+			error = switchTask(FlightTaskIndex::Orbit);
+			break;
+		case 6:
+			error = switchTask(FlightTaskIndex::DIYTask);
+			break;
 		default:
 			if (_param_mpc_pos_mode.get() != 4) {
 				PX4_ERR("MPC_POS_MODE %" PRId32 " invalid, resetting", _param_mpc_pos_mode.get());

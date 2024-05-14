@@ -43,11 +43,15 @@
  * 4 Sticks map to acceleration and there's a virtual brake drag
  *
  * @value 0 Direct velocity
+ * @value 1 MyTask
+ * @value 2 Continuous Yaw
  * @value 3 Smoothed velocity
  * @value 4 Acceleration based
+ * @value 5 Orbit
+ * @value 6 DIYTask
  * @group Multicopter Position Control
  */
-PARAM_DEFINE_INT32(MPC_POS_MODE, 4);
+PARAM_DEFINE_INT32(MPC_POS_MODE, 3);
 
 /**
  * Maximum horizontal velocity setpoint in Position mode

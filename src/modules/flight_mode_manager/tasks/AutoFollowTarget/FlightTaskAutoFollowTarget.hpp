@@ -135,7 +135,7 @@ public:
 	bool update() override;
 
 	// Override parameter update function to check when Follow Target properties are changed
-	void updateParams() override;
+	void updateParams() override; // <----------- !!!
 
 protected:
 	// Follow Altitude modes set by the parameter FLW_TGT_ALT_M
@@ -301,7 +301,7 @@ protected:
 		(ParamInt<px4::params::FLW_TGT_ALT_M>) _param_flw_tgt_alt_m,
 		(ParamFloat<px4::params::FLW_TGT_MAX_VEL>) _param_flw_tgt_max_vel
 	)
-
+	
 	uORB::Subscription _follow_target_estimator_sub{ORB_ID(follow_target_estimator)};
 
 	uORB::Publication<follow_target_status_s> _follow_target_status_pub{ORB_ID(follow_target_status)};

@@ -42,14 +42,19 @@
 #include <px4_platform_common/events.h>
 #include <lib/geo/geo.h>
 
-using namespace matrix;
+using namespace matrix; //The code uses the matrix namespace, which provides matrix operations.
 
 FlightTaskOrbit::FlightTaskOrbit()
+//The constructor initializes the FlightTaskOrbit object. It sets _sticks_data_required to false,
+// indicating that this flight task does not require stick data.
 {
 	_sticks_data_required = false;
 }
 
 bool FlightTaskOrbit::applyCommandParameters(const vehicle_command_s &command, bool &success)
+//This function processes a vehicle command (VEHICLE_CMD_DO_ORBIT) and adjusts the orbit parameters
+// accordingly. It extracts parameters from the command message and updates the orbit radius, velocity,
+// yaw behavior, center coordinates, and altitude.
 {
 	if (command.command != vehicle_command_s::VEHICLE_CMD_DO_ORBIT) {
 		return false;
@@ -126,6 +131,8 @@ bool FlightTaskOrbit::applyCommandParameters(const vehicle_command_s &command, b
 }
 
 bool FlightTaskOrbit::sendTelemetry()
+//This function sends telemetry data about the orbit status (e.g., radius, center coordinates) to
+// the ground station.
 {
 	orbit_status_s orbit_status{};
 	orbit_status.radius = math::signNoZero(_orbit_velocity) * _orbit_radius;
@@ -148,6 +155,7 @@ bool FlightTaskOrbit::sendTelemetry()
 }
 
 void FlightTaskOrbit::_sanitizeParams(float &radius, float &velocity) const
+// ???
 {
 	// clip the radius to be within range
 	radius = math::constrain(radius, _radius_min, _param_mc_orbit_rad_max.get());
@@ -163,6 +171,8 @@ void FlightTaskOrbit::_sanitizeParams(float &radius, float &velocity) const
 }
 
 bool FlightTaskOrbit::activate(const trajectory_setpoint_s &last_setpoint)
+//This function is called when the flight task is activated. It initializes the orbit parameters,
+// including the orbit radius, velocity, center coordinates, and yaw behavior.
 {
 	bool ret = FlightTaskManualAltitude::activate(last_setpoint);
 	_orbit_radius = _radius_min;
@@ -197,6 +207,9 @@ bool FlightTaskOrbit::activate(const trajectory_setpoint_s &last_setpoint)
 }
 
 bool FlightTaskOrbit::update()
+//This function is called periodically to update the flight task. It adjusts trajectory boundaries,
+// parameters based on stick input, generates setpoints for orbit approach or orbit trajectory, and
+// publishes telemetry data.
 {
 	bool ret = true;
 	_updateTrajectoryBoundaries();
@@ -234,6 +247,8 @@ bool FlightTaskOrbit::update()
 }
 
 void FlightTaskOrbit::_updateTrajectoryBoundaries()
+//This function updates trajectory constraints based on current flight conditions, such as maximum
+// acceleration and velocity.
 {
 	// update params of the position smoothing
 	_position_smoothing.setMaxAllowedHorizontalError(_param_mpc_xy_err_max.get());
@@ -259,6 +274,7 @@ void FlightTaskOrbit::_updateTrajectoryBoundaries()
 }
 
 bool FlightTaskOrbit::_is_position_on_circle() const
+//This function checks if the current position is on the orbit circle within an acceptable tolerance.
 {
 	return (fabsf(Vector2f(_position - _center).length() - _orbit_radius) < _horizontal_acceptance_radius)
 	       && fabsf(_position(2) - _center(2)) < _param_nav_mc_alt_rad.get();
@@ -266,6 +282,8 @@ bool FlightTaskOrbit::_is_position_on_circle() const
 }
 
 void FlightTaskOrbit::_adjustParametersByStick()
+//This function adjusts orbit parameters based on stick input, allowing the pilot to control the orbit
+// radius and velocity.
 {
 	float radius = _orbit_radius;
 	float velocity = _orbit_velocity;
@@ -293,6 +311,7 @@ void FlightTaskOrbit::_adjustParametersByStick()
 }
 
 void FlightTaskOrbit::_generate_circle_approach_setpoints()
+//This function generates setpoints for approaching the orbit circle perpendicularly.
 {
 	const Vector2f center2d = Vector2f(_center);
 	const Vector2f position_to_center_xy = center2d - Vector2f(_position);
@@ -314,6 +333,7 @@ void FlightTaskOrbit::_generate_circle_approach_setpoints()
 }
 
 void FlightTaskOrbit::_generate_circle_setpoints()
+//This function generates setpoints for maintaining the orbit trajectory.
 {
 	Vector3f center_to_position = _position - _center;
 	// xy velocity to go around in a circle
@@ -331,6 +351,7 @@ void FlightTaskOrbit::_generate_circle_setpoints()
 }
 
 void FlightTaskOrbit::_generate_circle_yaw_setpoints()
+//This function generates yaw setpoints for controlling the orientation of the quadcopter during orbit.
 {
 	Vector3f center_to_position = _position - _center;
 
